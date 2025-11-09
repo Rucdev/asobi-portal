@@ -8,7 +8,8 @@ export default defineConfig({
 	plugins: [
 		honox({
 			devServer: { adapter },
-			client: { input: ["/src/app/client.ts", "/src/app/style.css"] },
+			// entry: "/src/app/server.ts",
+			client: { input: ["/app/client.ts", "/app/style.css"] },
 		}),
 		tailwindcss(),
 		build(),

@@ -1,0 +1,32 @@
+@import 'tailwindcss' source('../app');
+
+/* Dark mode configuration - class-based strategy */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	/* Custom colors */
+	--color-primary: #4299e1;
+	--color-background-light: #f7fafc;
+	--color-background-dark: #1a202c;
+	--color-card-dark: #2d3748;
+	--color-text-light: #e2e8f0;
+	--color-text-dark: #1a202c;
+
+	/* Custom font family */
+	--font-display: 'Space Grotesk', sans-serif;
+
+	/* Custom border radius */
+	--radius: 0.25rem;
+	--radius-lg: 0.5rem;
+	--radius-xl: 0.75rem;
+	--radius-full: 9999px;
+}
+
+/* Material Symbols icon configuration */
+.material-symbols-outlined {
+	font-variation-settings:
+		'FILL' 0,
+		'wght' 400,
+		'GRAD' 0,
+		'opsz' 24;
+}

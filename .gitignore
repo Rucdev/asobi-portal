@@ -107,9 +107,6 @@ helm-values-*.yaml
 .wrangler/
 worker/
 
-# Drizzle
-drizzle/
-.drizzle/
 
 # Bun
 .bun/

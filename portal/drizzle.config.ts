@@ -1,10 +1,10 @@
-import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
+
 export default defineConfig({
-	out: "./src/infrastructure/persistence/drizzle/migrations",
-	schema: "./src/infrastructure/persistence/drizzle/schema/*.ts",
+	out: "./infrastructure/persistence/drizzle/migrations",
+	schema: "./infrastructure/persistence/drizzle/schema/*.ts",
 	dialect: "sqlite",
 	dbCredentials: {
-		url: process.env.DB_FILE_NAME || "mydb.sqlite",
+		url: Bun.env.DB_FILE_NAME || "mydb.sqlite",
 	},
 });
