@@ -32,3 +32,14 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+
+# database
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# uploads
+public/uploads/**/*
+!public/uploads/.gitkeep
+!public/uploads/games/.gitkeep

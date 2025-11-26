@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームポータルサイト - デザインシステムデモ</title>
+    <!-- Tailwind CSS CDNを読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* カスタム設定: Interフォントとダークテーマの基本スタイル */
+        :root {
+            --primary-color: #1e3a8a;
+            /* Indigo 800 */
+            --secondary-color: #111827;
+            /* Gray 900 */
+            --accent-color: #3b82f6;
+            /* Blue 500 */
+            --text-color: #f3f4f6;
+            /* Gray 100 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        /* スムーズな画面切り替えのためのアニメーション */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- 1. ヘッダーコンポーネント (Header Component) -->
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- ロゴ/サイト名 -->
+                <div class="flex-shrink-0">
+                    <span class="text-3xl font-extrabold text-blue-400">GAME<span
+                            class="text-white">PORTAL</span></span>
+                </div>
+
+                <!-- メインナビゲーション -->
+                <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="text-gray-300 hover:text-blue-400 transition duration-150 p-2 rounded-lg">ストア</a>
+                    <a href="#"
+                        class="text-gray-300 hover:text-blue-400 transition duration-150 p-2 rounded-lg">ライブラリ</a>
+                    <a href="#"
+                        class="text-gray-300 hover:text-blue-400 transition duration-150 p-2 rounded-lg">コミュニティ</a>
+                    <a href="#"
+                        class="text-gray-300 hover:text-blue-400 transition duration-150 p-2 rounded-lg">サポート</a>
+                </nav>
+
+                <!-- 検索とユーザー -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden sm:block">
+                        <input type="text" placeholder="ストア内を検索"
+                            class="bg-gray-700 text-gray-200 text-sm py-1.5 pl-4 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 w-40 transition duration-300">
+                        <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-1.5 px-4 rounded-full transition duration-150 shadow-md">
+                        アカウント
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツコンテナ -->
+    <main class="min-h-[calc(100vh-160px)]">
+
+        <!-- ============================================== -->
+        <!-- 画面 1: ストア一覧ページ (Store Page) -->
+        <!-- ============================================== -->
+        <div id="store-page" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+                <!-- 左サイドバー (Sidebar Component) -->
+                <div class="lg:col-span-1">
+                    <div class="space-y-6">
+                        <!-- カテゴリナビゲーション -->
+                        <div class="bg-gray-800 p-4 rounded-xl shadow-lg">
+                            <h2 class="text-lg font-bold mb-3 text-blue-400">カテゴリ</h2>
+                            <ul class="space-y-1 text-sm">
+                                <li><a href="#"
+                                        class="block p-2 rounded-lg hover:bg-gray-700 transition duration-150">新作 &
+                                        おすすめ</a></li>
+                                <li><a href="#"
+                                        class="block p-2 rounded-lg hover:bg-gray-700 transition duration-150">スペシャルオファー</a>
+                                </li>
+                                <li><a href="#"
+                                        class="block p-2 rounded-lg hover:bg-gray-700 transition duration-150">人気ランキング</a>
+                                </li>
+                                <li><a href="#"
+                                        class="block p-2 rounded-lg hover:bg-gray-700 transition duration-150">ジャンル別</a>
+                                </li>
+                                <li><a href="#"
+                                        class="block p-2 rounded-lg hover:bg-gray-700 transition duration-150">無料プレイ
+                                        (F2P)</a></li>
+                            </ul>
+                        </div>
+                        <!-- タグフィルター -->
+                        <div class="bg-gray-800 p-4 rounded-xl shadow-lg">
+                            <h2 class="text-lg font-bold mb-3 text-blue-400">人気タグ</h2>
+                            <div class="flex flex-wrap gap-2 text-sm">
+                                <span
+                                    class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full cursor-pointer transition">RPG</span>
+                                <span
+                                    class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full cursor-pointer transition">アクション</span>
+                                <span
+                                    class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full cursor-pointer transition">インディー</span>
+                                <span
+                                    class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full cursor-pointer transition">ストラテジー</span>
+                                <span
+                                    class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full cursor-pointer transition">シミュレーション</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- メインコンテンツエリア -->
+                <div class="lg:col-span-3 space-y-10">
+
+                    <!-- 2. フィーチャーバナーコンポーネント - 価格削除済み -->
+                    <div
+                        class="bg-gray-700 rounded-xl shadow-2xl overflow-hidden hover:shadow-blue-500/50 transition duration-500">
+                        <div class="grid grid-cols-1 md:grid-cols-3">
+                            <!-- イメージエリア (ダミー画像を使用) -->
+                            <div class="md:col-span-2 relative">
+                                <img src="https://placehold.co/1200x500/1f2937/d1d5db?text=Featured+Game+Banner"
+                                    alt="注目のゲームバナー" class="w-full h-full object-cover">
+                                <div
+                                    class="absolute bottom-0 left-0 bg-gradient-to-t from-gray-900 to-transparent w-full h-1/2">
+                                </div>
+                            </div>
+
+                            <!-- 詳細エリア -->
+                            <div class="p-6 md:p-8 md:col-span-1 flex flex-col justify-center">
+                                <h1 class="text-3xl font-extrabold mb-2 text-white">アドベンチャー・クエスト II</h1>
+                                <p class="text-blue-400 font-semibold mb-4">本日発売！</p>
+                                <p class="text-gray-300 text-sm mb-6 line-clamp-3">
+                                    広大なファンタジー世界を探索し、古代の謎を解き明かす壮大なRPG。
+                                    期間限定の特別価格で今すぐ手に入れよう！
+                                </p>
+                                <div class="flex items-center space-x-4">
+                                    <button
+                                        class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition duration-200 transform hover:scale-105 shadow-xl detail-button"
+                                        data-game-id="adventure-quest-2">
+                                        今すぐプレイ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. ゲームカードリスト -->
+                    <h2 class="text-2xl font-bold mb-4 border-b border-gray-700 pb-2 text-white">新作 & おすすめ</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+
+                        <!-- ゲームカードコンポーネント (Template 1: SALE) -->
+                        <div
+                            class="group bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                            <div class="relative">
+                                <img src="https://placehold.co/400x200/2d3748/cbd5e0?text=Game+A" alt="ゲーム A"
+                                    class="w-full h-32 object-cover transition duration-300 group-hover:opacity-80">
+                                <span
+                                    class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">セール中</span>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-base font-semibold truncate text-white">スペース・シューター</h3>
+                                <p class="text-xs text-gray-400 mb-2">アクション, SF</p>
+                                <div class="flex justify-end items-center mt-1">
+                                    <span
+                                        class="text-sm font-medium text-blue-400 hover:text-blue-300 transition detail-button"
+                                        data-game-id="space-shooter">詳細を見る</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ゲームカードコンポーネント (Template 2: NEW) -->
+                        <div
+                            class="group bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                            <div class="relative">
+                                <img src="https://placehold.co/400x200/2d3748/cbd5e0?text=Game+B" alt="ゲーム B"
+                                    class="w-full h-32 object-cover transition duration-300 group-hover:opacity-80">
+                                <span
+                                    class="absolute top-2 left-2 bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">新作</span>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-base font-semibold truncate text-white">ファンタジー・ビルダー</h3>
+                                <p class="text-xs text-gray-400 mb-2">シミュレーション, 建設</p>
+                                <div class="flex justify-end items-center mt-1">
+                                    <span
+                                        class="text-sm font-medium text-blue-400 hover:text-blue-300 transition detail-button"
+                                        data-game-id="fantasy-builder">詳細を見る</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ゲームカードコンポーネント (Template 3: F2P) -->
+                        <div
+                            class="group bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                            <div class="relative">
+                                <img src="https://placehold.co/400x200/2d3748/cbd5e0?text=Game+C" alt="ゲーム C"
+                                    class="w-full h-32 object-cover transition duration-300 group-hover:opacity-80">
+                                <span
+                                    class="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">無料</span>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-base font-semibold truncate text-white">ミスティック・アリーナ</h3>
+                                <p class="text-xs text-gray-400 mb-2">バトルロイヤル, F2P</p>
+                                <div class="flex justify-end items-center mt-1">
+                                    <span class="text-lg font-bold text-blue-400 detail-button"
+                                        data-game-id="mystic-arena">無料プレイ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ゲームカードコンポーネント (Template 4: Standard) -->
+                        <div
+                            class="group bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                            <div class="relative">
+                                <img src="https://placehold.co/400x200/2d3748/cbd5e0?text=Game+D" alt="ゲーム D"
+                                    class="w-full h-32 object-cover transition duration-300 group-hover:opacity-80">
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-base font-semibold truncate text-white">レトロ・レーサー</h3>
+                                <p class="text-xs text-gray-400 mb-2">レース, スポーツ</p>
+                                <div class="flex justify-end items-center mt-1">
+                                    <span
+                                        class="text-sm font-medium text-blue-400 hover:text-blue-300 transition detail-button"
+                                        data-game-id="retro-racer">詳細を見る</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 繰り返し (Zombie Survival) -->
+                        <div
+                            class="group bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                            <div class="relative">
+                                <img src="https://placehold.co/400x200/2d3748/cbd5e0?text=Game+E" alt="ゲーム E"
+                                    class="w-full h-32 object-cover transition duration-300 group-hover:opacity-80">
+                                <span
+                                    class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-md">セール中</span>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-base font-semibold truncate text-white">ゾンビ・サバイバル</h3>
+                                <p class="text-xs text-gray-400 mb-2">ホラー, サバイバル</p>
+                                <div class="flex justify-end items-center mt-1">
+                                    <span
+                                        class="text-sm font-medium text-blue-400 hover:text-blue-300 transition detail-button"
+                                        data-game-id="zombie-survival">詳細を見る</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 繰り返し (Puzzle Master) -->
+                        <div
+                            class="group bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-blue-500/50 transition duration-300 transform hover:-translate-y-1 cursor-pointer">
+                            <div class="relative">
+                                <img src="https://placehold.co/400x200/2d3748/cbd5e0?text=Game+F" alt="ゲーム F"
+                                    class="w-full h-32 object-cover transition duration-300 group-hover:opacity-80">
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-base font-semibold truncate text-white">パズル・マスター</h3>
+                                <p class="text-xs text-gray-400 mb-2">パズル, カジュアル</p>
+                                <div class="flex justify-end items-center mt-1">
+                                    <span
+                                        class="text-sm font-medium text-blue-400 hover:text-blue-300 transition detail-button"
+                                        data-game-id="puzzle-master">詳細を見る</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- /Game Card Grid -->
+
+                    <div class="text-center pt-4">
+                        <button
+                            class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-8 rounded-xl transition duration-200">
+                            さらに表示
+                        </button>
+                    </div>
+
+                </div> <!-- /Main Content -->
+
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- 画面 2: ゲーム詳細ページ (Detail Page) -->
+        <!-- ============================================== -->
+        <div id="detail-page" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-in">
+            <button id="back-to-store"
+                class="text-blue-400 hover:text-blue-300 mb-6 flex items-center text-sm font-semibold transition duration-150">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                ストアに戻る
+            </button>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+                <!-- 詳細メインコンテンツ (lg:col-span-3) -->
+                <div class="lg:col-span-3 space-y-8">
+                    <h1 id="detail-title" class="text-4xl font-extrabold text-white">アドベンチャー・クエスト II</h1>
+                    <div class="text-gray-400 text-sm">
+                        開発元: <span class="text-blue-400 hover:underline">Fantasia Studios</span> | 発売日: 2023年10月27日
+                    </div>
+
+                    <!-- メディアセクション (動画/スクリーンショット) -->
+                    <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden aspect-video">
+                        <img id="detail-media" src="https://placehold.co/1600x600/1f2937/d1d5db?text=Main+Game+Media"
+                            alt="メインメディア" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- ゲームの説明 -->
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-bold border-b border-gray-700 pb-2 text-white">ゲームについて</h2>
+                        <p id="detail-description" class="text-gray-300 leading-relaxed">
+                            広大なファンタジー世界を舞台にしたターン制RPGの傑作。プレイヤーは古代の遺産を巡る壮大な旅に出ます。
+                            数十時間に及ぶ重厚なストーリー、戦略的な戦闘システム、そして数百種類に及ぶユニークな装備と魔法があなたを待っています。
+                        </p>
+                        <ul class="list-disc list-inside text-gray-300 pl-4 space-y-2 text-sm">
+                            <li>壮大なオープンワールドの探索</li>
+                            <li>奥深いキャラクターカスタマイズとスキルツリー</li>
+                            <li>PvPアリーナでのマルチプレイヤーバトル</li>
+                            <li>シーズンごとに更新されるイベントとコンテンツ</li>
+                        </ul>
+                    </div>
+
+                    <!-- システム要件 -->
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-bold border-b border-gray-700 pb-2 text-white">システム要件</h2>
+                        <div class="overflow-x-auto bg-gray-800 rounded-lg p-4">
+                            <table class="w-full text-sm text-left text-gray-400">
+                                <thead class="text-xs text-gray-300 uppercase bg-gray-700 rounded-t-lg">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 rounded-tl-lg">
+                                            項目
+                                        </th>
+                                        <th scope="col" class="px-6 py-3">
+                                            最小 (Minimum)
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 rounded-tr-lg">
+                                            推奨 (Recommended)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-gray-800 border-b border-gray-700">
+                                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+                                            OS
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            Windows 10 64-bit
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            Windows 11 64-bit
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-gray-800 border-b border-gray-700">
+                                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+                                            CPU
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            Intel Core i5 (2.5 GHz)
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            Intel Core i7 (3.5 GHz)
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-gray-800 border-b border-gray-700">
+                                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+                                            メモリ
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            8 GB RAM
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            16 GB RAM
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-gray-800">
+                                        <th scope="row" class="px-6 py-4 font-medium text-white whitespace-nowrap">
+                                            グラフィック
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            NVIDIA GTX 1060
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            NVIDIA RTX 3070
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 詳細サイドバー (lg:col-span-1) -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <p class="text-xl font-bold text-white mb-4">入手方法</p>
+
+                        <div class="flex items-center justify-between mb-4">
+                            <!-- 価格非表示のため、単に利用可能ステータスを表示 -->
+                            <span class="text-base font-semibold text-gray-300">ストアで利用可能</span>
+                            <span class="text-lg font-bold text-blue-400" id="detail-price-status">今すぐプレイ</span>
+                        </div>
+
+                        <button
+                            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition duration-200 shadow-xl mb-3">
+                            ライブラリに追加
+                        </button>
+                        <button
+                            class="w-full bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-2 rounded-lg transition duration-200">
+                            <svg class="w-5 h-5 inline mr-2 -mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                </path>
+                            </svg>
+                            ウィッシュリストに追加
+                        </button>
+
+                        <div class="mt-6 border-t border-gray-700 pt-6 space-y-3 text-sm">
+                            <h3 class="text-lg font-semibold text-white">コミュニティ評価</h3>
+                            <p class="flex justify-between items-center">
+                                <span>すべてのレビュー:</span>
+                                <span class="text-green-400 font-semibold flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M10 15l-5.878 3.09 1.123-6.545L.487 7.56l6.572-.955L10 1.5l2.94 6.105 6.572.955-4.758 4.636 1.123 6.545L10 15z">
+                                        </path>
+                                    </svg>
+                                    非常に好評 (95%)
+                                </span>
+                            </p>
+                            <p class="flex justify-between"><span>ジャンル:</span> <span class="text-gray-300">RPG,
+                                    アドベンチャー</span></p>
+                            <p class="flex justify-between"><span>対応言語:</span> <span class="text-gray-300">日本語, 英語,
+                                    中国語</span></p>
+                            <p class="flex justify-between"><span>タグ:</span>
+                                <span class="flex flex-wrap justify-end gap-1">
+                                    <span class="bg-gray-700 px-2 py-0.5 rounded-full text-xs">ファンタジー</span>
+                                    <span class="bg-gray-700 px-2 py-0.5 rounded-full text-xs">オープンワールド</span>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター (Footer Component) -->
+    <footer class="bg-gray-900 mt-12 py-6 text-center text-gray-500 text-sm">
+        <p>&copy; 2023 GAMEPORTAL デモ. All rights reserved. | <a href="#"
+                class="text-blue-400 hover:underline">プライバシーポリシー</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const storePage = document.getElementById('store-page');
+            const detailPage = document.getElementById('detail-page');
+            const detailButtons = document.querySelectorAll('.detail-button');
+            const backButton = document.getElementById('back-to-store');
+
+            // ダミーデータ (どのゲームの「詳細を見る」を押しても同じ詳細画面が表示されます)
+            const gameData = {
+                'adventure-quest-2': {
+                    title: 'アドベンチャー・クエスト II',
+                    description: '広大なファンタジー世界を舞台にしたターン制RPGの傑作。プレイヤーは古代の遺産を巡る壮大な旅に出ます。数十時間に及ぶ重厚なストーリー、戦略的な戦闘システム、そして数百種類に及ぶユニークな装備と魔法があなたを待っています。',
+                    mediaUrl: 'https://placehold.co/1600x600/1e40af/fff?text=Adventure+Quest+II+Trailer'
+                }
+                // 他のゲームIDのデータもここに追加可能
+            };
+
+            // ストア一覧画面を表示する関数
+            function showStorePage() {
+                storePage.classList.remove('hidden');
+                detailPage.classList.add('hidden');
+                detailPage.classList.remove('fade-in');
+                window.scrollTo(0, 0); // 画面トップに戻す
+            }
+
+            // 詳細画面を表示する関数
+            function showDetailPage(gameId) {
+                // gameIdを使い、詳細情報を設定することも可能ですが、今回はダミーデータで共通画面を表示します
+                const data = gameData[gameId] || gameData['adventure-quest-2'];
+
+                document.getElementById('detail-title').textContent = data.title;
+                document.getElementById('detail-description').textContent = data.description;
+                document.getElementById('detail-media').src = data.mediaUrl;
+
+                storePage.classList.add('hidden');
+                detailPage.classList.remove('hidden');
+                detailPage.classList.add('fade-in');
+                window.scrollTo(0, 0); // 画面トップに戻す
+            }
+
+            // 「詳細を見る」ボタンのクリックイベントを設定
+            detailButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    // イベント伝播を止め、親要素のクリックイベントによるナビゲーションを防ぐ
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const gameId = button.getAttribute('data-game-id');
+                    showDetailPage(gameId);
+                });
+            });
+
+            // 「ストアに戻る」ボタンのクリックイベントを設定
+            backButton.addEventListener('click', showStorePage);
+
+            // 初期表示はストアページ
+            showStorePage();
+        });
+    </script>
+</body>
+
+</html>

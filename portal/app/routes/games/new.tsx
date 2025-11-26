@@ -1,117 +1,52 @@
-import { createRoute } from 'honox/factory';
-import { zValidator } from '@hono/zod-validator';
-import { z } from 'zod';
-import { Container, PageHeader, Input, TextArea, FileUpload, FormActions, ErrorMessage } from '../../components/ui';
-import FileUploadHandler from '../../islands/FileUploadHandler';
-
-const FormSchema = z.object({
-  creatorId: z.string().transform((val) => parseInt(val, 10)),
-  title: z.string().min(1).max(200),
-  description: z.string().min(1),
-  url: z.string().url(),
-  tags: z.string().transform((val: string) => {
-    if (val.trim().length === 0) return [];
-    return val.split(',').map((t: string) => t.trim()).filter((t: string) => t.length > 0);
-  }),
-});
-
-export const POST = createRoute(
-  zValidator('form', FormSchema),
-  async (c) => {
-    const data = c.req.valid('form');
-    const baseUrl = c.req.url.split('/games')[0];
-
-    try {
-      const response = await fetch(`${baseUrl}/api/games`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        return c.render(
-          <ErrorMessage
-            message={(error as any).error}
-            actionLabel="もう一度試す"
-            actionHref="/games/new"
-          />
-        );
-      }
-
-      return c.redirect('/games');
-    } catch (error) {
-      return c.render(
-        <ErrorMessage
-          message={error instanceof Error ? error.message : 'Unknown error'}
-          actionLabel="もう一度試す"
-          actionHref="/games/new"
-        />
-      );
-    }
-  }
-);
+import { createRoute } from "honox/factory";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
+import GameFormHandler from "@/app/islands/GameFormHandler";
 
 export default createRoute((c) => {
-  return c.render(
-    <Container size="lg">
-      <PageHeader
-        title="ゲームを追加"
-        description="ポータルにゲームを追加するには、以下の詳細を入力してください。"
-      />
+	return c.render(
+		<div class="min-h-screen bg-gray-900 text-gray-100">
+			<title>新しいゲームを追加 - ゲームポータル</title>
+			<Header />
 
-      <form method="post" class="flex flex-col gap-6">
-              {/* Creator ID - 実際のアプリケーションではセッションから取得すべき */}
-              <input type="hidden" name="creatorId" value="1" />
+			<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				{/* ヘッダー */}
+				<div class="mb-8">
+					<div class="flex items-center gap-4 mb-2">
+						<a
+							href="/games"
+							class="text-blue-400 hover:text-blue-300 transition-colors"
+						>
+							← ゲーム一覧に戻る
+						</a>
+					</div>
+					<h1 class="text-3xl font-bold text-white">新しいゲームを追加</h1>
+					<p class="text-gray-400 mt-2">
+						ゲームの情報を入力して追加してください
+					</p>
+				</div>
 
-              <Input
-                type="text"
-                name="title"
-                label="ゲームタイトル*"
-                required
-                maxLength={200}
-                placeholder="例：スーパー・スペース・アドベンチャー"
-              />
+				{/* フォームカード */}
+				<div class="bg-gray-800 rounded-lg shadow-lg p-6 md:p-8 border border-gray-700">
+					<GameFormHandler />
+				</div>
 
-              <TextArea
-                name="description"
-                label="ゲームの説明*"
-                required
-                placeholder="例：宇宙を舞台にしたスリリングな横スクロールシューティングゲーム。"
-              />
+				{/* ヘルプテキスト */}
+				<div class="mt-6 bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+					<h3 class="font-semibold text-blue-300 mb-2">ヒント:</h3>
+					<ul class="text-sm text-blue-200 space-y-1 list-disc list-inside">
+						<li>タイトルは最大200文字まで入力できます</li>
+						<li>説明は最大5000文字まで入力できます</li>
+						<li>URLは有効なURL形式で入力してください（例: https://example.com）</li>
+						<li>タグは最大20個まで追加でき、カンマで区切って入力します</li>
+						<li>
+							画像のアップロードは、ゲーム作成後の詳細ページから行えます
+						</li>
+					</ul>
+				</div>
+			</main>
 
-              <Input
-                type="url"
-                name="url"
-                label="ゲームURL*"
-                required
-                placeholder="例：https://example.com/super-space-adventure"
-              />
-
-              <FileUploadHandler
-                name="thumbnail"
-                label="サムネイル画像"
-                title="サムネイル画像をアップロード"
-                description="推奨サイズ：800x600px。フォーマット：JPG、PNG"
-                accept="image/*"
-              />
-
-              <Input
-                type="text"
-                name="tags"
-                label="タグ"
-                placeholder="例：シューティング, SF, アクション"
-                helperText="カンマ区切りで入力してください"
-              />
-
-              <FormActions
-                cancelLabel="キャンセル"
-                cancelHref="/games"
-                submitLabel="ゲームを公開"
-              />
-            </form>
-    </Container>
-  );
+			<Footer copyrightText="GAMEPORTAL デモ" year={2025} />
+		</div>,
+	);
 });

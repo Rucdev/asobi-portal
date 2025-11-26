@@ -1,10 +1,10 @@
-import { defineConfig } from "drizzle-kit";
+import type { Config } from 'drizzle-kit';
 
-export default defineConfig({
-	out: "./infrastructure/persistence/drizzle/migrations",
-	schema: "./infrastructure/persistence/drizzle/schema/*.ts",
-	dialect: "sqlite",
-	dbCredentials: {
-		url: Bun.env.DB_FILE_NAME || "mydb.sqlite",
-	},
-});
+export default {
+  schema: './lib/db/schema/index.ts',
+  out: './migrations',
+  dialect: 'sqlite',
+  dbCredentials: {
+    url: process.env.DB_PATH || './data/portal.db',
+  },
+} satisfies Config;

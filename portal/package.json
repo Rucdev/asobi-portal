@@ -1,47 +1,40 @@
 {
-	"name": "basic",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build --mode client && vite build",
-		"preview": "wrangler dev",
-		"deploy": "bun run build && wrangler deploy",
-		"db:generate": "drizzle-kit generate",
-		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio",
-		"test": "vitest",
-		"test:ui": "vitest --ui",
-		"test:coverage": "vitest run --coverage"
-	},
-	"private": true,
-	"dependencies": {
-		"@hono/zod-validator": "^0.7.4",
-		"@libsql/client": "^0.15.15",
-		"bcrypt": "^6.0.0",
-		"better-sqlite3": "^12.4.1",
-		"drizzle-orm": "^0.44.6",
-		"hono": "^4.9.12",
-		"hono-sessions": "^0.8.0",
-		"honox": "^0.1.49",
-		"uuid": "^13.0.0",
-		"zod": "^4.1.12"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.3.4",
-		"@cloudflare/workers-types": "^4.20250214.0",
-		"@hono/vite-build": "^1.3.0",
-		"@hono/vite-dev-server": "^0.18.2",
-		"@tailwindcss/vite": "^4.0.9",
-		"@types/bcrypt": "^6.0.0",
-		"@types/better-sqlite3": "^7.6.13",
-		"@types/bun": "^1.3.0",
-		"@types/uuid": "^11.0.0",
-		"@vitest/ui": "^3.2.4",
-		"dotenv": "^17.2.3",
-		"drizzle-kit": "^0.31.5",
-		"tailwindcss": "^4.0.9",
-		"vite": "^6.3.5",
-		"vitest": "^3.2.4",
-		"wrangler": "^4.4.0"
-	}
+  "name": "basic",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --mode client && vite build",
+    "preview": "wrangler dev",
+    "deploy": "bun run build && wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "private": true,
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.5",
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.4.6",
+    "drizzle-orm": "^0.44.7",
+    "hono": "^4.10.6",
+    "honox": "^0.1.51",
+    "sharp": "^0.34.5",
+    "uuid": "^13.0.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250214.0",
+    "@hono/vite-build": "^1.3.0",
+    "@hono/vite-dev-server": "^0.18.2",
+    "@tailwindcss/vite": "^4.0.9",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/bun": "^1.3.3",
+    "@types/uuid": "^11.0.0",
+    "drizzle-kit": "^0.31.7",
+    "tailwindcss": "^4.0.9",
+    "vite": "^6.3.5",
+    "wrangler": "^4.4.0"
+  }
 }

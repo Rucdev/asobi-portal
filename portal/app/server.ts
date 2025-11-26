@@ -1,11 +1,8 @@
-import { showRoutes } from "hono/dev";
-import { createApp } from "honox/server";
+import { showRoutes } from 'hono/dev'
+import { createApp } from 'honox/server'
 
-const app = createApp();
+const app = createApp()
 
-// Apply global session middleware to all routes
-app.use('*');
+showRoutes(app)
 
-showRoutes(app);
-
-export default app;
+export default app

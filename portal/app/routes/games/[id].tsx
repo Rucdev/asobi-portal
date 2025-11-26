@@ -1,83 +1,149 @@
-import { createRoute } from 'honox/factory';
-import { url } from 'zod';
+import { createRoute } from "honox/factory";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
+import BackButton from "@/app/components/BackButton";
+import ImageUploader from "@/app/islands/ImageUploader";
+import { gamesService } from "@/lib/services/games";
 
 export default createRoute(async (c) => {
-  const id = c.req.param('id');
-  const baseUrl = c.req.url.split('/games')[0];
-  const response = await fetch(`${baseUrl}/api/games/${id}`);
+	const id = c.req.param("id");
+	const game = await gamesService.findById(id);
 
-  if (!response.ok) {
-    return c.notFound();
-  }
+	if (!game) {
+		return c.notFound();
+	}
 
-  // ダミーのゲームデータ型定義
-  const game= {
-    url: "https://example.com/game-play",
-    averageRating: 4.2,
-    creatorId: "creator_123",
-    reviewCount: 5,
-    tags: ["adventure", "multiplayer"],
-    title: "Sample Game Title",
-    response: [],
-    reviews: [
-      {
-        id: "review_1",
-        rating: 5,
-        content: "Great game!",
-        userId: "user_1",
-        createdAt: "2024-01-01T12:00:00Z",
-      },
-      {
-        id: "review_2",
-        rating: 4,
-        content: "Enjoyed playing it.",
-        userId: "user_2",
-        createdAt: "2024-01-02T15:30:00Z",
-      },
-    ],
-  }
+	// バナー画像を取得
+	const bannerImage = game.thumbnails?.find((t) => t.imageType === "banner");
+	const bannerUrl =
+		bannerImage?.detailUrl ||
+		bannerImage?.iconUrl ||
+		"https://placehold.co/1600x600/2d3748/cbd5e0?text=No+Banner";
 
-  return c.render(
-    <div class="max-w-4xl mx-auto py-8 px-4">
-      <h1 class="text-3xl font-bold text-text-dark dark:text-text-light mb-4">{game.title}</h1>
-      <p class="mb-4">
-        <a
-          href={game.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="bg-primary text-white font-bold py-2 px-4 rounded hover:bg-primary/80 transition-colors inline-block"
-        >
-          Play Game
-        </a>
-      </p>
-      <div class="bg-white dark:bg-card-dark rounded-lg p-6 mb-6">
-        <p class="text-gray-600 dark:text-gray-400 mb-2">Tags: {game.tags.join(', ')}</p>
-        <p class="text-gray-600 dark:text-gray-400 mb-2">Created by: {game.creatorId}</p>
-        <p class="text-gray-600 dark:text-gray-400">
-          Average Rating: {game.averageRating ? game.averageRating.toFixed(1) : 'No ratings yet'}
-          ({game.reviewCount} {game.reviewCount === 1 ? 'review' : 'reviews'})
-        </p>
-      </div>
+	// スクリーンショット画像を取得
+	const screenshots = game.thumbnails?.filter(
+		(t) => t.imageType === "screenshot",
+	);
 
-      <h2 class="text-2xl font-bold text-text-dark dark:text-text-light mb-4">Reviews</h2>
-      {game.reviews.length === 0 ? (
-        <p class="text-gray-600 dark:text-gray-400 bg-white dark:bg-card-dark rounded-lg p-6">No reviews yet.</p>
-      ) : (
-        <ul class="space-y-4">
-          {game.reviews.map((review) => (
-            <li key={review.id} class="bg-white dark:bg-card-dark rounded-lg p-6">
-              <p class="font-bold text-text-dark dark:text-text-light mb-2">Rating: {review.rating}/5</p>
-              <p class="text-gray-700 dark:text-gray-300 mb-2">{review.content}</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">By: {review.userId}</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">Posted: {new Date(review.createdAt).toLocaleDateString()}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+	// タグを取得
+	const tags = game.tags?.map((t) => t.tagValue) || [];
 
-      <p class="mt-6">
-        <a href="/games" class="text-primary hover:underline font-semibold">Back to Games</a>
-      </p>
-    </div>
-  );
+	// 日付をフォーマット
+	const formatDate = (date: Date | null) => {
+		if (!date) return "";
+		return new Intl.DateTimeFormat("ja-JP", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		}).format(date);
+	};
+
+	return c.render(
+		<div class="min-h-screen bg-gray-900 text-gray-100">
+			<title>{game.title} - ゲームポータル</title>
+
+			<Header />
+
+			<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				<BackButton href="/games" label="ゲーム一覧に戻る" />
+
+				<div class="max-w-4xl mx-auto space-y-8">
+					{/* タイトルと基本情報 */}
+					<div>
+						<h1 class="text-4xl font-extrabold text-white mb-2">
+							{game.title}
+						</h1>
+						<div class="text-gray-400 text-sm">
+							作成日: {formatDate(game.createdAt)} | 更新日:{" "}
+							{formatDate(game.updatedAt)}
+						</div>
+					</div>
+
+					{/* バナー画像 */}
+					<div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden aspect-video">
+						<img
+							src={bannerUrl}
+							alt={game.title}
+							class="w-full h-full object-cover"
+						/>
+					</div>
+
+					{/* スクリーンショット */}
+					{screenshots && screenshots.length > 0 && (
+						<div class="space-y-4">
+							<h2 class="text-2xl font-bold border-b border-gray-700 pb-2 text-white">
+								スクリーンショット
+							</h2>
+							<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+								{screenshots.map((screenshot) => (
+									<a
+										key={screenshot.id}
+										href={screenshot.detailUrl || screenshot.iconUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="block rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
+									>
+										<img
+											src={screenshot.iconUrl}
+											alt={screenshot.altText || "Screenshot"}
+											class="w-full h-32 object-cover"
+										/>
+									</a>
+								))}
+							</div>
+						</div>
+					)}
+
+					{/* ゲームの説明 */}
+					<div class="space-y-4">
+						<h2 class="text-2xl font-bold border-b border-gray-700 pb-2 text-white">
+							ゲームについて
+						</h2>
+						<p class="text-gray-300 leading-relaxed whitespace-pre-wrap">
+							{game.description || "説明はまだ追加されていません。"}
+						</p>
+					</div>
+
+					{/* タグ */}
+					{tags.length > 0 && (
+						<div class="space-y-4">
+							<h2 class="text-2xl font-bold border-b border-gray-700 pb-2 text-white">
+								タグ
+							</h2>
+							<div class="flex flex-wrap gap-2">
+								{tags.map((tag) => (
+									<span
+										key={tag}
+										class="px-3 py-1 bg-gray-700 text-gray-300 rounded-full text-sm"
+									>
+										{tag}
+									</span>
+								))}
+							</div>
+						</div>
+					)}
+
+					{/* ゲームへのリンク */}
+					<div class="pt-6 text-center">
+						<a
+							href={game.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition"
+						>
+							ゲームをプレイ →
+						</a>
+					</div>
+
+					{/* 画像管理セクション */}
+					<div class="mt-12 pt-8 border-t border-gray-700">
+						<h2 class="text-2xl font-bold text-white mb-6">画像管理</h2>
+						<ImageUploader gameId={game.id} />
+					</div>
+				</div>
+			</main>
+
+			<Footer copyrightText="GAMEPORTAL デモ" year={2025} />
+		</div>,
+	);
 });
