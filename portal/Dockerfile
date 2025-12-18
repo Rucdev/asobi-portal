@@ -3,6 +3,12 @@
 # ===== Build stage =====
 FROM oven/bun:1 AS builder
 
+# Install build dependencies for native modules (better-sqlite3)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Install dependencies
@@ -24,8 +30,8 @@ FROM oven/bun:1-slim AS runner
 WORKDIR /app
 
 # Create non-root user
-RUN addgroup --system --gid 1001 app && \
-    adduser --system --uid 1001 --ingroup app app
+RUN groupadd --system --gid 1001 app && \
+    useradd --system --uid 1001 --gid app app
 
 # Copy built assets and dependencies
 COPY --from=builder /app/dist ./dist
