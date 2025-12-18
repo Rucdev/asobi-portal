@@ -1,14 +1,15 @@
 // app/routes/api/games/[id].ts
-import { Hono } from 'hono';
+import { createRoute } from 'honox/factory';
 import { zValidator } from '@hono/zod-validator';
 import { updateGameSchema } from '@/lib/schemas/game';
 import { gamesService } from '@/lib/services/games';
 
-const app = new Hono();
-
 // ゲーム詳細取得
-app.get('/:id', async (c) => {
+export const GET = createRoute(async (c) => {
   const id = c.req.param('id');
+  if (!id) {
+    return c.json({ error: 'Game ID is required' }, 400);
+  }
   const game = await gamesService.findById(id);
 
   if (!game) {
@@ -19,11 +20,14 @@ app.get('/:id', async (c) => {
 });
 
 // ゲーム更新
-app.put('/:id', zValidator('json', updateGameSchema), async (c) => {
+export const PUT = createRoute(zValidator('json', updateGameSchema), async (c) => {
   const id = c.req.param('id');
+  if (!id) {
+    return c.json({ error: 'Game ID is required' }, 400);
+  }
   const body = c.req.valid('json');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
+  const user = c.get('user');
+  const userId = user?.id ?? 'anonymous';
 
   try {
     const game = await gamesService.update(id, body, userId);
@@ -42,10 +46,13 @@ app.put('/:id', zValidator('json', updateGameSchema), async (c) => {
 });
 
 // ゲーム削除
-app.delete('/:id', async (c) => {
+export const DELETE = createRoute(async (c) => {
   const id = c.req.param('id');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
+  if (!id) {
+    return c.json({ error: 'Game ID is required' }, 400);
+  }
+  const user = c.get('user');
+  const userId = user?.id ?? 'anonymous';
 
   try {
     await gamesService.delete(id, userId);
@@ -62,5 +69,3 @@ app.delete('/:id', async (c) => {
     throw error;
   }
 });
-
-export default app;

@@ -1,17 +1,18 @@
 // app/routes/api/games/[id]/tags.ts
-import { Hono } from 'hono';
+import { createRoute } from 'honox/factory';
 import { zValidator } from '@hono/zod-validator';
 import { addTagsSchema } from '@/lib/schemas/game';
 import { tagsService } from '@/lib/services/tags';
 
-const app = new Hono();
-
 // タグ追加
-app.post('/:id/tags', zValidator('json', addTagsSchema), async (c) => {
+export const POST = createRoute(zValidator('json', addTagsSchema), async (c) => {
   const gameId = c.req.param('id');
+  if (!gameId) {
+    return c.json({ error: 'Game ID is required' }, 400);
+  }
   const { tags } = c.req.valid('json');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
+  const user = c.get('user');
+  const userId = user?.id ?? 'anonymous';
 
   try {
     const result = await tagsService.addToGame(gameId, tags, userId);
@@ -28,28 +29,3 @@ app.post('/:id/tags', zValidator('json', addTagsSchema), async (c) => {
     throw error;
   }
 });
-
-// タグ削除
-app.delete('/:id/tags/:tagId', async (c) => {
-  const gameId = c.req.param('id');
-  const tagId = c.req.param('tagId');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
-
-  try {
-    await tagsService.removeFromGame(gameId, tagId, userId);
-    return c.json({ success: true });
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === 'Game not found') {
-        return c.json({ error: 'Game not found' }, 404);
-      }
-      if (error.message === 'Unauthorized') {
-        return c.json({ error: 'Unauthorized' }, 403);
-      }
-    }
-    throw error;
-  }
-});
-
-export default app;

@@ -4,10 +4,12 @@ import Footer from "@/app/components/Footer";
 import GameFormHandler from "@/app/islands/GameFormHandler";
 
 export default createRoute((c) => {
+	const user = c.get("user");
+
 	return c.render(
 		<div class="min-h-screen bg-gray-900 text-gray-100">
 			<title>新しいゲームを追加 - ゲームポータル</title>
-			<Header />
+			<Header user={user} />
 
 			<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				{/* ヘッダー */}

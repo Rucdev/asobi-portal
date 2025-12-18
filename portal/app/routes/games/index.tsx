@@ -13,10 +13,13 @@ export default createRoute(async (c) => {
 	// データベースからゲーム一覧を取得
 	const { games } = await gamesService.list({ page, limit: 20, tag, search });
 
+	// ログインユーザー情報を取得
+	const user = c.get("user");
+
 	return c.render(
 		<div class="min-h-screen bg-gray-900 text-gray-100">
 			<title>ゲームポータル - ゲーム一覧</title>
-			<Header />
+			<Header user={user} />
 			<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				<div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
 					<h2 class="text-2xl font-bold text-white">ゲーム一覧</h2>

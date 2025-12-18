@@ -2,12 +2,14 @@ import { createRoute } from "honox/factory";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import BackButton from "@/app/components/BackButton";
+import AdminOnly from "@/app/components/AdminOnly";
 import ImageUploader from "@/app/islands/ImageUploader";
 import { gamesService } from "@/lib/services/games";
 
 export default createRoute(async (c) => {
 	const id = c.req.param("id");
 	const game = await gamesService.findById(id);
+	const user = c.get("user");
 
 	if (!game) {
 		return c.notFound();
@@ -42,7 +44,7 @@ export default createRoute(async (c) => {
 		<div class="min-h-screen bg-gray-900 text-gray-100">
 			<title>{game.title} - ゲームポータル</title>
 
-			<Header />
+			<Header user={user} />
 
 			<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 				<BackButton href="/games" label="ゲーム一覧に戻る" />
@@ -135,11 +137,13 @@ export default createRoute(async (c) => {
 						</a>
 					</div>
 
-					{/* 画像管理セクション */}
-					<div class="mt-12 pt-8 border-t border-gray-700">
-						<h2 class="text-2xl font-bold text-white mb-6">画像管理</h2>
-						<ImageUploader gameId={game.id} />
-					</div>
+					{/* 画像管理セクション（管理者のみ） */}
+					<AdminOnly user={user}>
+						<div class="mt-12 pt-8 border-t border-gray-700">
+							<h2 class="text-2xl font-bold text-white mb-6">画像管理</h2>
+							<ImageUploader gameId={game.id} />
+						</div>
+					</AdminOnly>
 				</div>
 			</main>
 

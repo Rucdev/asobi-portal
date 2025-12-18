@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: asobiba
+  labels:
+    app.kubernetes.io/name: asobiba
+    app.kubernetes.io/part-of: asobiba-cms

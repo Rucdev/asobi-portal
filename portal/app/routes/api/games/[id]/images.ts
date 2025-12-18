@@ -1,5 +1,5 @@
 // app/routes/api/games/[id]/images.ts
-import { Hono } from 'hono';
+import { createRoute } from 'honox/factory';
 import { IMAGE_TYPES } from '@/lib/db/schema/games';
 
 // Sharp を使用する imagesService を遅延ロード
@@ -8,30 +8,41 @@ const getImagesService = async () => {
   return imagesService;
 };
 
-const app = new Hono();
-
-// 画像一覧取得（タイプ別フィルタ可能）
-app.get('/', async (c) => {
+// 画像一覧取得（タイプ別フィルタ可能）- 閲覧は誰でも可能
+export const GET = createRoute(async (c) => {
   const gameId = c.req.param('id');
-  const imageType = c.req.query('type') as any;
+  if (!gameId) {
+    return c.json({ error: 'Game ID is required' }, 400);
+  }
 
-  if (imageType && !Object.values(IMAGE_TYPES).includes(imageType)) {
+  const imageType = c.req.query('type');
+
+  if (imageType && !Object.values(IMAGE_TYPES).includes(imageType as typeof IMAGE_TYPES[keyof typeof IMAGE_TYPES])) {
     return c.json({ error: 'Invalid image type' }, 400);
   }
 
   const imagesService = await getImagesService();
   const images = imageType
-    ? await imagesService.getByType(gameId, imageType)
+    ? await imagesService.getByType(gameId, imageType as typeof IMAGE_TYPES[keyof typeof IMAGE_TYPES])
     : await imagesService.getByGame(gameId);
 
   return c.json({ images });
 });
 
-// 画像アップロード
-app.post('/', async (c) => {
+// 画像アップロード（管理者のみ）
+export const POST = createRoute(async (c) => {
+  const user = c.get('user');
+  if (!user) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+  if (user.userType !== 'admin') {
+    return c.json({ error: 'Forbidden: Admin access required' }, 403);
+  }
+
   const gameId = c.req.param('id');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
+  if (!gameId) {
+    return c.json({ error: 'Game ID is required' }, 400);
+  }
 
   try {
     const body = await c.req.parseBody();
@@ -44,7 +55,7 @@ app.post('/', async (c) => {
       return c.json({ error: 'No file provided' }, 400);
     }
 
-    if (!Object.values(IMAGE_TYPES).includes(imageType as any)) {
+    if (!Object.values(IMAGE_TYPES).includes(imageType as typeof IMAGE_TYPES[keyof typeof IMAGE_TYPES])) {
       return c.json({ error: 'Invalid image type' }, 400);
     }
 
@@ -63,9 +74,9 @@ app.post('/', async (c) => {
     const thumbnail = await imagesService.upload(
       gameId,
       file,
-      imageType as any,
+      imageType as typeof IMAGE_TYPES[keyof typeof IMAGE_TYPES],
       altText,
-      userId
+      user.id
     );
 
     return c.json(thumbnail, 201);
@@ -75,45 +86,3 @@ app.post('/', async (c) => {
     return c.json({ error: message }, 500);
   }
 });
-
-// 画像削除
-app.delete('/:imageId', async (c) => {
-  const gameId = c.req.param('id');
-  const imageId = c.req.param('imageId');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
-
-  try {
-    const imagesService = await getImagesService();
-    await imagesService.remove(gameId, imageId, userId);
-    return c.json({ success: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to delete image';
-    return c.json({ error: message }, 500);
-  }
-});
-
-// 画像順序変更
-app.put('/order', async (c) => {
-  const gameId = c.req.param('id');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
-
-  try {
-    const body = await c.req.json();
-    const { imageIds } = body;
-
-    if (!Array.isArray(imageIds)) {
-      return c.json({ error: 'imageIds must be an array' }, 400);
-    }
-
-    const imagesService = await getImagesService();
-    await imagesService.reorder(gameId, imageIds, userId);
-    return c.json({ success: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to reorder images';
-    return c.json({ error: message }, 500);
-  }
-});
-
-export default app;

@@ -20,7 +20,6 @@ export async function seed() {
     await db.insert(users).values({
       id: testUserId,
       name: 'Test User',
-      email: 'test@example.com',
       passwordHash: 'test-hash', // TODO: 実際のハッシュ化を実装
       userType: 'admin',
       createdAt: new Date(),

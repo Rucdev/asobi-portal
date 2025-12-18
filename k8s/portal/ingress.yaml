@@ -1,0 +1,30 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: portal-stripprefix
+  namespace: asobiba
+spec:
+  stripPrefix:
+    prefixes:
+      - /portal
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: portal
+  namespace: asobiba
+  labels:
+    app.kubernetes.io/name: portal
+    app.kubernetes.io/component: ingress
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: PathPrefix(`/portal`)
+      kind: Rule
+      services:
+        - name: portal
+          port: 80
+      middlewares:
+        - name: portal-stripprefix
+          namespace: asobiba

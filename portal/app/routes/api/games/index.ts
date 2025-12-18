@@ -1,13 +1,11 @@
 // app/routes/api/games/index.ts
-import { Hono } from 'hono';
+import { createRoute } from 'honox/factory';
 import { zValidator } from '@hono/zod-validator';
 import { createGameSchema, listGamesQuerySchema } from '@/lib/schemas/game';
 import { gamesService } from '@/lib/services/games';
 
-const app = new Hono();
-
 // ゲーム一覧取得
-app.get('/', zValidator('query', listGamesQuerySchema), async (c) => {
+export const GET = createRoute(zValidator('query', listGamesQuerySchema), async (c) => {
   const { page, limit, tag, search } = c.req.valid('query');
 
   const result = await gamesService.list({ page, limit, tag, search });
@@ -16,10 +14,10 @@ app.get('/', zValidator('query', listGamesQuerySchema), async (c) => {
 });
 
 // ゲーム作成
-app.post('/', zValidator('json', createGameSchema), async (c) => {
+export const POST = createRoute(zValidator('json', createGameSchema), async (c) => {
   const body = c.req.valid('json');
-  // TODO: セッションから取得
-  const userId = 'test-user-id';
+  const user = c.get('user');
+  const userId = user?.id ?? 'unknown';
 
   const game = await gamesService.create({
     ...body,
@@ -28,5 +26,3 @@ app.post('/', zValidator('json', createGameSchema), async (c) => {
 
   return c.json(game, 201);
 });
-
-export default app;

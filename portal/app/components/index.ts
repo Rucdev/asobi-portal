@@ -1,3 +1,4 @@
+export { default as AdminOnly } from './AdminOnly'
 export { default as BackButton } from './BackButton'
 export { default as Badge } from './Badge'
 export { default as Button } from './Button'

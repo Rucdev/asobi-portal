@@ -1,7 +1,7 @@
 // app/routes/users/index.tsx
 import { createRoute } from 'honox/factory';
 import { usersService } from '@/lib/services/users';
-import { Header, Footer, Button, Badge } from '@/app/components';
+import { Header, Footer, Button } from '@/app/components';
 
 export default createRoute(async (c) => {
   const page = Number(c.req.query('page') || 1);
@@ -15,6 +15,9 @@ export default createRoute(async (c) => {
     userType,
   });
 
+  // ログインユーザー情報を取得
+  const currentUser = c.get('user');
+
   return c.render(
     <html>
       <head>
@@ -24,7 +27,7 @@ export default createRoute(async (c) => {
         <link rel="stylesheet" href="/app/style.css" />
       </head>
       <body class="bg-gray-900 text-white min-h-screen">
-        <Header />
+        <Header user={currentUser} />
 
         <main class="container mx-auto px-4 py-8">
           {/* ヘッダーセクション */}
@@ -44,7 +47,7 @@ export default createRoute(async (c) => {
 
           {/* 検索・フィルターセクション */}
           <div class="bg-gray-800 rounded-lg p-6 mb-6">
-            <form method="GET" action="/users" class="flex gap-4 items-end">
+            <form method="get" action="/users" class="flex gap-4 items-end">
               <div class="flex-1">
                 <label for="search" class="block text-sm font-medium mb-2">
                   検索
@@ -54,7 +57,7 @@ export default createRoute(async (c) => {
                   name="search"
                   type="text"
                   value={search}
-                  placeholder="名前またはメールアドレスで検索..."
+                  placeholder="名前で検索..."
                   class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -104,7 +107,6 @@ export default createRoute(async (c) => {
                 <thead class="bg-gray-700">
                   <tr>
                     <th class="px-6 py-4 text-left text-sm font-semibold">名前</th>
-                    <th class="px-6 py-4 text-left text-sm font-semibold">メールアドレス</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold">ユーザータイプ</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold">作成日</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold">操作</th>
@@ -118,9 +120,6 @@ export default createRoute(async (c) => {
                     >
                       <td class="px-6 py-4">
                         <div class="font-medium">{user.name}</div>
-                      </td>
-                      <td class="px-6 py-4">
-                        <div class="text-gray-300">{user.email}</div>
                       </td>
                       <td class="px-6 py-4">
                         {user.userType === 'admin' ? (

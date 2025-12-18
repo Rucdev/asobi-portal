@@ -1,14 +1,15 @@
 // app/routes/api/users/[id].ts
-import { Hono } from 'hono';
+import { createRoute } from 'honox/factory';
 import { zValidator } from '@hono/zod-validator';
 import { updateUserSchema } from '@/lib/schemas/user';
 import { usersService } from '@/lib/services/users';
 
-const app = new Hono();
-
 // ユーザー詳細取得
-app.get('/:id', async (c) => {
+export const GET = createRoute(async (c) => {
   const id = c.req.param('id');
+  if (!id) {
+    return c.json({ error: 'User ID is required' }, 400);
+  }
 
   try {
     const user = await usersService.findById(id);
@@ -25,8 +26,11 @@ app.get('/:id', async (c) => {
 });
 
 // ユーザー更新
-app.put('/:id', zValidator('json', updateUserSchema), async (c) => {
+export const PUT = createRoute(zValidator('json', updateUserSchema), async (c) => {
   const id = c.req.param('id');
+  if (!id) {
+    return c.json({ error: 'User ID is required' }, 400);
+  }
   const body = c.req.valid('json');
 
   try {
@@ -39,16 +43,19 @@ app.put('/:id', zValidator('json', updateUserSchema), async (c) => {
     return c.json(user);
   } catch (error) {
     console.error('Error updating user:', error);
-    if (error instanceof Error && error.message === 'Email already exists') {
-      return c.json({ error: 'Email already exists' }, 409);
+    if (error instanceof Error && error.message === 'Name already exists') {
+      return c.json({ error: 'この名前は既に使用されています' }, 409);
     }
     return c.json({ error: 'Failed to update user' }, 500);
   }
 });
 
 // ユーザー削除
-app.delete('/:id', async (c) => {
+export const DELETE = createRoute(async (c) => {
   const id = c.req.param('id');
+  if (!id) {
+    return c.json({ error: 'User ID is required' }, 400);
+  }
 
   try {
     await usersService.delete(id);
@@ -61,5 +68,3 @@ app.delete('/:id', async (c) => {
     return c.json({ error: 'Failed to delete user' }, 500);
   }
 });
-
-export default app;

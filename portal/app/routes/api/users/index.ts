@@ -1,13 +1,11 @@
 // app/routes/api/users/index.ts
-import { Hono } from 'hono';
+import { createRoute } from 'honox/factory';
 import { zValidator } from '@hono/zod-validator';
 import { createUserSchema, listUsersQuerySchema } from '@/lib/schemas/user';
 import { usersService } from '@/lib/services/users';
 
-const app = new Hono();
-
 // ユーザー一覧取得
-app.get('/', zValidator('query', listUsersQuerySchema), async (c) => {
+export const GET = createRoute(zValidator('query', listUsersQuerySchema), async (c) => {
   const query = c.req.valid('query');
 
   try {
@@ -20,7 +18,7 @@ app.get('/', zValidator('query', listUsersQuerySchema), async (c) => {
 });
 
 // ユーザー作成
-app.post('/', zValidator('json', createUserSchema), async (c) => {
+export const POST = createRoute(zValidator('json', createUserSchema), async (c) => {
   const body = c.req.valid('json');
 
   try {
@@ -28,11 +26,9 @@ app.post('/', zValidator('json', createUserSchema), async (c) => {
     return c.json(user, 201);
   } catch (error) {
     console.error('Error creating user:', error);
-    if (error instanceof Error && error.message === 'Email already exists') {
-      return c.json({ error: 'Email already exists' }, 409);
+    if (error instanceof Error && error.message === 'Name already exists') {
+      return c.json({ error: 'この名前は既に使用されています' }, 409);
     }
     return c.json({ error: 'Failed to create user' }, 500);
   }
 });
-
-export default app;

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-config
+  namespace: asobiba
+  labels:
+    app.kubernetes.io/name: portal
+    app.kubernetes.io/component: config
+data:
+  DB_PATH: "/data/portal.db"
+  NODE_ENV: "production"
