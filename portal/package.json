@@ -6,6 +6,7 @@
     "build": "vite build --mode client && vite build",
     "preview": "wrangler dev",
     "deploy": "bun run build && wrangler deploy",
+    "start": "bun run dist/serve.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Development files
+.git
+.gitignore
+.env
+.env.*
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+
+# Data
+data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Misc
+.DS_Store
+*.log

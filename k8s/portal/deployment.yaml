@@ -7,9 +7,9 @@ metadata:
     app.kubernetes.io/name: portal
     app.kubernetes.io/component: web
 spec:
-  replicas: 1  # SQLiteを使用するため1固定
+  replicas: 1 # SQLiteを使用するため1固定
   strategy:
-    type: Recreate  # PVCを使用するためRollingUpdateは不可
+    type: Recreate # PVCを使用するためRollingUpdateは不可
   selector:
     matchLabels:
       app: portal
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: portal
-          image: your-registry/portal:latest  # TODO: 実際のイメージに置き換え
+          image: portal:latest
           imagePullPolicy: Always
           ports:
             - name: http
